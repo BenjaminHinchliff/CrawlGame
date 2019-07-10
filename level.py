@@ -10,13 +10,14 @@ from player import Player
 
 # class to hold the level data and level's supporting functions
 class Level:
-    # TODO: find the file type
+    # open the level file and process the data to create the level the user sees
     def __init__(self, pathToLevelFile: list, items: list, monsters: list):
         self.room = [i.split(" ") for i in open(pathToLevelFile).read().split('\n') ]
-        # replace all the ` in the load file's array with spaces
         for i, arr in enumerate(self.room):
+            # replace all the ` in the load file's array with spaces
             while '`' in arr:
                 arr[arr.index('`')] = ' '
+            # change the color of all the wall objects to cyan
             for j, item in enumerate(arr):
                 if(item == '#'):
                     self.room[i][j] = tm.colored(item, 'cyan')
@@ -26,8 +27,10 @@ class Level:
         # store monsters
         self.monsters = monsters
 
+    # test if the player passed into the method is on a wall
     def isAtSolid(self, player: Player) -> bool:
         x, y = player.getPos()
+        # has to have tm.colored so that the data actually matches
         return(self.room[y][x] == tm.colored('#', 'cyan'))
 
     def print(self, player: Player = None) -> None:
@@ -46,6 +49,6 @@ class Level:
         if(player): 
             x, y = player.getPos()
             cRoom[y][x] = tm.colored('@', 'yellow')
-        # print rendered room
+        # print modified room
         for arr in cRoom:
             print(" ".join(arr))

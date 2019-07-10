@@ -21,6 +21,7 @@ class Player:
         self.pos = pos
         self.items = items or []
         self.health = 20
+        self.MAX_HEALTH = 20
         self.damage = 1
         self.weapon = "Fists"
         self.itemColor = 'white'
@@ -67,12 +68,9 @@ class Player:
 
     def printStats(self):
         print(
-            "Health: |%s| Weapon: %s | Damage: %d" % 
+            "Health: %s Weapon: %s | Damage: %d" % 
             (
-                tm.colored(
-                    "█" * self.health + " " * (20 - self.health), 
-                    'green' if(self.health > 13) else 'yellow' if(self.health > 7) else 'red'
-                ),
+                misc.createColoredHealthBar(self.health, self.MAX_HEALTH),
                 tm.colored(self.weapon, self.itemColor), self.damage
             )
         )

@@ -15,15 +15,22 @@ import monsters as mon
 
 # processes input if and when the player does stuff
 def processPlayerInput(input: str, player: play.Player, level: lvl.Level, monsterState: list) -> None:
-    if  (input == "list"):
+    # print help page
+    if  (input == "list" or input == "help"):
         misc.clearTerminal()
-        print("Type w, s, a, and d to move up, down, left, and right, respectively (but you have to press enter to actually move)")
+        print("7 8 9\n \\|/\n4-@-6\n /|\\\n1 2 3\nyou have to press enter to actually move, through")
+        print("Try to move into an enemy to attack them for the amount of damage that your current weapon does")
         print("Type \"pickup\" to pickup an item that you are over, and \"exit\" to leave the game.")
         misc.pauseTerminal()
+    # test for player picking up items
     elif(input == "pickup"):
         player.pickupItem()
     else:
+        # process movement input by character
+        # ie: www input would move player up by 2
         for char in input:
+            # store start location in case the user is
+            # moving into a wall or a monster
             lastX, lastY = player.getPos()
             if  (char == 'w' or char == '8'):
                 player.move(play.Player.Direction.UP)
@@ -45,13 +52,17 @@ def processPlayerInput(input: str, player: play.Player, level: lvl.Level, monste
             elif(char == '1'):
                 player.move(play.Player.Direction.DOWN)
                 player.move(play.Player.Direction.LEFT)
-
+            # move the player back to last position if moving 
+            # into a wall or monster, and attack monster
+            # test if on a monster
             anEntity = misc.entityIsOn(player, monsterState)
-            if(level.isAtSolid(player)):
+            # test if on a solid
+            if(level.isAtSolid(player) or anEntity):
+                # move back to last location
                 player.setPos(play.Pos(lastX, lastY))
-            elif(anEntity):
-                player.setPos(play.Pos(lastX, lastY))
-                player.attack(anEntity)
+                if(anEntity):
+                    player.attack(anEntity)
+            # update monsters and display health
             mon.checkTriggers(player, monsterState)
             mon.updateMonsters(player, monsterState)
 
@@ -67,6 +78,7 @@ def main() -> int:
         misc.clearTerminal()
         testLevel.print(player)
         player.printStats()
+        mon.printMonsterHealth(monsters)
         command = input("Enter a command (list to list them): ")
         processPlayerInput(command, player, testLevel, monsters)
         win = player.damage > 3 and not monsters

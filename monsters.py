@@ -13,6 +13,7 @@ class Monster:
         self.display = display
         self.pos = startPos
         self.health = health
+        self.MAX_HEALTH = health
         self.damage = damage
 
     def getPos(self):
@@ -36,6 +37,9 @@ class Slime(Monster):
     def __init__(self, startPos: Pos, health: int):
         Monster.__init__(self, "Slime", tm.colored('_', 'green'), startPos, health, 3)
 
+
+# TODO: package these methods in a Monsters class and
+# store the pointer to the monster list from there
 monsterConfig = json.loads(open("data/monsters.json").read())["monsters"]
 
 def checkTriggers(playerState: Player, monsters: list):
@@ -54,3 +58,8 @@ def updateMonsters(playerState: Player, monsters: list):
             del monsters[monsters.index(monster)]
         else:
             monster.moveAndAttack(playerState)
+
+def printMonsterHealth(monsters: list):
+    for monster in monsters:
+        print("%s: %s" % (monster.monsterType, misc.createColoredHealthBar(monster.health, monster.MAX_HEALTH)), end="")
+    print()
