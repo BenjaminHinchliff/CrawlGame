@@ -7,6 +7,7 @@ from pos import Pos
 from player import Player
 import misc
 
+# base class to derive other monsters from
 class Monster:
     def __init__(self, monsterType: str,  display: str, startPos: Pos, health: int, damage: int):
         self.monsterType = monsterType
@@ -36,36 +37,55 @@ class Monster:
             player.health -= self.damage
 
 class Slime(Monster):
-    def __init__(self, startPos: Pos, health: int):
-        Monster.__init__(self, "Slime", tm.colored('_', 'green'), startPos, health, 3)
+    def __init__(self, startPos: Pos, level: int):
+        Monster.__init__(self, "Slime", tm.colored('_', 'green'), startPos, level * 5, 3)
 
+class DemonKing(Monster):
+    def __init__(self, startPos: Pos):
+        Monster.__init__(self, 'King of Demons', tm.colored('X', 'red'), startPos, 131070, 9)
 
-# TODO: package these methods in a Monsters class and
-# store the pointer to the monster list from there
-# (if I can be bothered)
-monsterConfig = json.loads(open("data/monsters.json").read())["monsters"]
+# class to store the current state of the monsters
+class Monsters:
+    def __init__(self, monsterConfigFilePath: str):
+        self.config = json.loads(open("data/monsters.json").read())["monsters"]
+        self.monsters = []
 
-# check the triggers in the monsters.json file to see if the monster should appear
-def checkTriggers(playerState: Player, monsters: list):
-    pX, pY = playerState.getPos()
-    for protoMonster in monsterConfig:
-        tX, tY = [int(i) for i in protoMonster["trigger"].split()]
-        if(pX == tX and pY == tY):
-            print("monster found with type of %s" % (protoMonster["type"]))
-            if protoMonster["type"] == "Slime":
-                mX, mY = [int(i) for i in protoMonster["location"].split()]
-                monsters.append(Slime(Pos(mX, mY), protoMonster["health"]))
+    # get the current state of the monsters list
+    def getMonsters(self) -> list:
+        return self.monsters
 
-# move all the monsters toward player
-def updateMonsters(playerState: Player, monsters: list):
-    for monster in monsters:
-        if monster.health <= 0:
-            del monsters[monsters.index(monster)]
-        else:
-            monster.moveAndAttack(playerState)
+    # check the triggers in the monsters.json file to see if the monster should appear
+    def checkTriggers(self, playerState: Player):
+        pX, pY = playerState.getPos()
+        for configMonster in self.config:
+            tX, tY = [int(i) for i in configMonster["trigger"].split()]
+            if(pX == tX and pY == tY and not configMonster["spawned"]):
+                configMonster["spawned"] = True
+                mX, mY = [int(i) for i in configMonster["location"].split()]
+                if configMonster["type"] == "Slime":
+                    self.monsters.append(Slime(Pos(mX, mY), configMonster["level"]))
+                elif configMonster["type"] == "DemonKing":
+                    self.monsters.append(DemonKing(Pos(mX, mY)))
 
-# print the health of all the current monsters that exist
-def printMonsterHealth(monsters: list):
-    for monster in monsters:
-        print("%s: %s" % (monster.monsterType, misc.createColoredHealthBar(monster.health, monster.MAX_HEALTH)), end="")
-    print()
+    # move all the monsters toward player or delete a dead monster
+    def updateMonsters(self, playerState: Player):
+        for monster in self.monsters:
+            if monster.health <= 0:
+                del self.monsters[self.monsters.index(monster)]
+            else:
+                monster.moveAndAttack(playerState)
+
+    # print the health of all the current monsters that exist
+    def printMonsterHealth(self):
+        for monster in self.monsters:
+            print(
+                "%s: %s" % (
+                    monster.monsterType,
+                    misc.createColoredHealthBar(
+                        monster.health,
+                        monster.MAX_HEALTH
+                    )
+                ),
+                end=""
+            )
+        print()

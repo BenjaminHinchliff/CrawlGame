@@ -7,11 +7,12 @@ import termcolor as tm
 
 # local module imports
 from player import Player
+import monsters
 
 # class to hold the level data and level's supporting functions
 class Level:
     # open the level file and process the data to create the level the user sees
-    def __init__(self, pathToLevelFile: list, items: list, monsters: list):
+    def __init__(self, pathToLevelFile: list, items: list, monsters: monsters.Monsters):
         self.room = [i.split(" ") for i in open(pathToLevelFile).read().split('\n') ]
         for i, arr in enumerate(self.room):
             # replace all the ` in the load file's array with spaces
@@ -42,7 +43,7 @@ class Level:
                 x, y = [int(i) for i in item["location"].split(" ")]
                 cRoom[y][x] = tm.colored(item["display"], item["displayColor"])
         # add monsters
-        for monster in self.monsters:
+        for monster in self.monsters.getMonsters():
             x, y = monster.getPos()
             cRoom[y][x] = monster.display
         # add player

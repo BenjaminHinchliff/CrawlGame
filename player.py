@@ -80,3 +80,8 @@ class Player:
                 tm.colored(self.weapon, self.itemColor), self.damage
             )
         )
+
+    # regenerate a certain amount of health
+    def regenerate(self, amount: int) -> None:
+        if self.health < self.MAX_HEALTH:
+            self.health += amount

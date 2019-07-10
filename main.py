@@ -11,10 +11,10 @@ import json
 from pos import Pos
 import level as lvl
 import player as play
-import monsters as mon
+import monsters
 
 # processes input if and when the player does stuff
-def processPlayerInput(input: str, player: play.Player, level: lvl.Level, monsterState: list) -> None:
+def processPlayerInput(input: str, player: play.Player, level: lvl.Level, monsterState: monsters.Monsters) -> None:
     # print help page
     if  (input == "list" or input == "help"):
         misc.clearTerminal()
@@ -55,22 +55,24 @@ def processPlayerInput(input: str, player: play.Player, level: lvl.Level, monste
             # move the player back to last position if moving 
             # into a wall or monster, and attack monster
             # test if on a monster
-            anEntity = misc.entityIsOn(player, monsterState)
+            anEntity = misc.entityIsOn(player, monsterState.getMonsters())
             # test if on a solid
             if(level.isAtSolid(player) or anEntity):
                 # move back to last location
                 player.setPos(play.Pos(lastX, lastY))
                 if(anEntity):
                     player.attack(anEntity)
-            # update monsters and display health
-            mon.checkTriggers(player, monsterState)
-            mon.updateMonsters(player, monsterState)
+            # update monsters
+            monsterState.checkTriggers(player)
+            monsterState.updateMonsters(player)
+            # have the player regen 1 health per turn
+            player.regenerate(1)
 
 # main code
 def main() -> int:
     items = json.loads(open("data/items.json").read())["items"]
-    monsters = []
-    testLevel = lvl.Level("data/level.lvls", items, monsters)
+    monstersObj = monsters.Monsters("data/monsters.json")
+    testLevel = lvl.Level("data/level.lvls", items, monstersObj)
     player = play.Player(play.Pos(2,2), items)
     command = None
     win = False
@@ -78,10 +80,10 @@ def main() -> int:
         misc.clearTerminal()
         testLevel.print(player)
         player.printStats()
-        mon.printMonsterHealth(monsters)
+        monstersObj.printMonsterHealth()
         command = input("Enter a command (list to list them): ")
-        processPlayerInput(command, player, testLevel, monsters)
-        win = player.damage > 3 and not monsters
+        processPlayerInput(command, player, testLevel, monstersObj)
+        win = player.damage > 3 and not monstersObj.getMonsters()
     if(win):
         misc.clearTerminal()
         tm.cprint("Congrats! You rescued the lord from the dungeon!")

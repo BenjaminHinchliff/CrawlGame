@@ -1,6 +1,7 @@
 # default module imports
 import subprocess
 import termcolor as tm
+import os
 
 # clears the terminal
 def clearTerminal() -> None:
@@ -31,8 +32,19 @@ def entityIsOn(mainEntity, compareEntities: list):
             return entity
     return False
 
-def createColoredHealthBar(health: int, maxHealth: int):
+def createBossHealthBar(health: int, maxHealth: int):
+    columns = os.get_terminal_size()[0]
+    columns -= 20
+    amountFull = health / maxHealth
     return tm.colored(
-                "|" + "█" * health + " " * (maxHealth - health) + "|", 
-                'green' if(health > maxHealth / 3 * 2) else 'yellow' if(health > maxHealth / 3) else 'red'
-            )
+        "|" + "█" * round(columns * amountFull) + " " * round(columns * (1 - amountFull))  + "|",
+        'magenta'
+    )
+
+def createColoredHealthBar(health: int, maxHealth: int):
+    if(maxHealth > os.get_terminal_size()[0]):
+        return createBossHealthBar(health, maxHealth)
+    return tm.colored(
+        "|" + "█" * health + " " * (maxHealth - health) + "|",
+        'green' if(health > maxHealth / 3 * 2) else 'yellow' if(health > maxHealth / 3) else 'red'
+    )

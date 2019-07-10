@@ -4,13 +4,21 @@
             "type": "Slime",
             "location": "12 2",
             "trigger": "4 2",
-            "health": 5
+            "level": 1,
+            "spawned": false
         },
         {
             "type": "Slime",
             "location": "16 3",
             "trigger": "12 5",
-            "health": 20
+            "level": 2,
+            "spawned": false
+        },
+        {
+            "type": "DemonKing",
+            "location": "14 4",
+            "trigger": "14 10",
+            "spawned": false
         }
     ]
 }
