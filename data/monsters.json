@@ -1,0 +1,16 @@
+{
+    "monsters": [
+        {
+            "type": "Slime",
+            "location": "12 2",
+            "trigger": "4 2",
+            "health": 5
+        },
+        {
+            "type": "Slime",
+            "location": "16 3",
+            "trigger": "12 5",
+            "health": 20
+        }
+    ]
+}

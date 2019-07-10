@@ -1,0 +1,22 @@
+{
+    "items": [
+        {
+            "name": "Whacky Stick",
+            "location": "8 7",
+            "display": "/",
+            "displayColor": "green",
+            "damage": "3",
+            "flavor": "The wonderous adventurer of talwar was rumored to have a faithful wacky stick",
+            "pickedUp": false
+        },
+        {
+            "name": "Lord Fish",
+            "location": "14 10",
+            "display": "X",
+            "displayColor": "blue",
+            "damage": "65535",
+            "flavor": "The long lost relative of fishy the III, he has declared himself lord of the dungeon",
+            "pickedUp": false
+        }
+    ]
+}
