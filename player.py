@@ -26,9 +26,11 @@ class Player:
         self.weapon = "Fists"
         self.itemColor = 'white'
     
+    # get player's position
     def getPos(self) -> Pos:
         return self.pos
 
+    # set player's position
     def setPos(self, pos: Pos) -> bool:
         self.pos = pos
 
@@ -62,10 +64,14 @@ class Player:
         misc.pauseTerminal()
         return False
 
+    # attack the monster in the monster argument if the player
+    # is adjacent
     def attack(self, monster):
         if(misc.isAdjacentTo(self, monster)):
             monster.health -= self.damage
 
+    # print player's health (with a bar), weapon, and their damage
+    # to the console
     def printStats(self):
         print(
             "Health: %s Weapon: %s | Damage: %d" % 

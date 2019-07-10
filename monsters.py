@@ -16,9 +16,11 @@ class Monster:
         self.MAX_HEALTH = health
         self.damage = damage
 
+    # get the position of the monster
     def getPos(self):
         return (self.pos.x, self.pos.y)
 
+    # move toward the player and attack if required
     def moveAndAttack(self, player: Player):
         pX, pY = player.getPos()
         if(not misc.isAdjacentTo(self, player)):
@@ -40,8 +42,10 @@ class Slime(Monster):
 
 # TODO: package these methods in a Monsters class and
 # store the pointer to the monster list from there
+# (if I can be bothered)
 monsterConfig = json.loads(open("data/monsters.json").read())["monsters"]
 
+# check the triggers in the monsters.json file to see if the monster should appear
 def checkTriggers(playerState: Player, monsters: list):
     pX, pY = playerState.getPos()
     for protoMonster in monsterConfig:
@@ -52,6 +56,7 @@ def checkTriggers(playerState: Player, monsters: list):
                 mX, mY = [int(i) for i in protoMonster["location"].split()]
                 monsters.append(Slime(Pos(mX, mY), protoMonster["health"]))
 
+# move all the monsters toward player
 def updateMonsters(playerState: Player, monsters: list):
     for monster in monsters:
         if monster.health <= 0:
@@ -59,6 +64,7 @@ def updateMonsters(playerState: Player, monsters: list):
         else:
             monster.moveAndAttack(playerState)
 
+# print the health of all the current monsters that exist
 def printMonsterHealth(monsters: list):
     for monster in monsters:
         print("%s: %s" % (monster.monsterType, misc.createColoredHealthBar(monster.health, monster.MAX_HEALTH)), end="")
